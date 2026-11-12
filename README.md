@@ -33,29 +33,26 @@ In agent loops the bill is mostly the context being re-read, not the code being 
 
 ## What is in it
 
-| Part | What it does |
-|---|---|
-| `tools/boost.py` | Report from your local session logs: list-price dollars by token class (cache read / cache write / output / input), main thread vs subagents, model, project, top sessions, the share of input read from cache, average prompt size, and which levers apply. |
-| `agents/reader.md` | A Haiku, read-only helper for lookups (find, read, list). Its tokens never enter your main context, and its answer is capped at 15 rows. |
-| `skills/lean/` | Simplest-change checklist before coding, short answers, cache hygiene. Loaded only when called, so it adds nothing to turns that don't use it. |
-| `hooks/budget.py` | Daily dollar cap (`BOOST_DAY_USD`), optionally per project (`BOOST_PROJECT`): warns at 80%, blocks new prompts at 100%. |
-| `hooks/cache_guard.py` | Warns before an edit to CLAUDE.md / AGENTS.md / settings mid-session, which re-writes the whole cached prompt. |
+Built for long sessions, free on short ones: the default install adds **zero tokens** to your requests, so a short task costs exactly what it did. Boost only speaks up once a session has grown long enough that starting fresh pays off.
+
+| Part | What it does | Tokens added to your requests |
+|---|---|---|
+| `hooks/session_guard.py` | **The core.** Once a session passes 100K tokens (`BOOST_CLEAR_AT`), tells you before your next prompt: new task? `/clear` first. Silent below that. Repeats only after another 50K of growth. | 0 (shown to you, not sent to the model) |
+| `tools/boost.py` | Report from your local session logs: dollars by token class, main thread vs subagents, model, project, top sessions, average prompt size, and which lever applies. | 0 (runs outside Claude Code) |
+| `skills/lean/` | Simplest-change checklist and short answers, loaded only when called. | 0 until called |
+| `agents/reader.md` (opt-in, `--reader`) | Haiku 5.5 read-only helper for bulky lookups (many files, big logs). | ~550 per request |
+| `hooks/cache_guard.py` (optional) | Warns before a mid-session edit to CLAUDE.md / settings, which re-writes the whole cached prompt. | 0 |
+| `hooks/budget.py` (optional) | Daily dollar cap (`BOOST_DAY_USD`), off unless set. | 0 |
 
 ## Install
 
 ```bash
 git clone https://github.com/JacobTheJacobs/claude-boost-cost-optimizer.git claude-boost
-cd claude-boost && ./install.sh          # copies the agent and skill; prints the hook settings to add
+cd claude-boost && ./install.sh          # lean skill; prints the session-guard hook to add to settings.json
 python3 tools/boost.py --days 7          # see where your money goes
 ```
 
-Then add one line to your CLAUDE.md:
-
-```markdown
-For easy read-only work (reading files, logs or docs, searching, listing), use the `reader` agent instead of `fork`.
-```
-
-`fork` subagents always run on your main model; a model override on them is ignored. Named agents like `reader` run on the model in their file.
+Add `--reader` to also install the Haiku `reader` agent. It costs ~550 tokens on every request, so take it only if you often have Claude read many files or large logs. `fork` subagents always run on your main model; a named agent like `reader` runs on Haiku.
 
 ## Does it work? Eval results
 
@@ -85,6 +82,7 @@ Plain Claude Code vs Claude Code with Boost, and with four popular token-saving 
 - **On short tasks nothing beats plain Claude Code.** Every add-on costs a little more (+1% to +10%), because each one adds its own instructions to every request and these tasks are too short to earn that back. Caveman and Ponytail cost the most; Boost the least.
 - **Slimmed Boost (current version):** after these results we cut Boost's always-on text to the one-line `reader` description and moved everything else into the on-demand `lean` skill. Re-measured back to back against plain (36 runs): plain $0.172, Boost $0.173 per run, 18/18 each. That is parity: the remaining $0.001 is the ~550 tokens Claude Code spends listing any custom agent.
 - **Measure in one batch.** The same plain setup cost $0.197 per run in one batch and $0.174 an hour later. Gaps under about 10% between setups run at different times are noise, so every number above comes from back-to-back runs.
+- **Why short tasks don't save:** most of a short task's cost is Claude Code's own ~16K-token start-up prompt, the same in every setup; a 3-5 step task has no growing context to cut; and any always-on add-on text costs a little on every request. That is why the default install now adds nothing to requests and acts only on long sessions.
 - **Where savings live:** long sessions. In real use (`tools/boost.py`) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. The long-session eval below measures it.
 
 So: run `tools/boost.py`, act on what it shows, and don't install a plugin expecting it to cut short-task costs.
