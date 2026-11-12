@@ -6,7 +6,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/hero-dark.svg">
-  <img src="docs/hero-light.svg" alt="Claude Boost: a real week of one developer's Claude Code spend by token class: cache reads 64%, cache writes 22%, output 14%. Most of the bill is the context being re-read on every request.">
+  <img src="docs/hero-light.svg" alt="Claude Boost: cost of one 10-task Claude Code session on Opus 5.5. Plain $4.97, with Claude Boost $1.74, 65% less, 20/20 tasks passed in both.">
 </picture>
 
 ## Result: 65% cheaper on long sessions, same quality
