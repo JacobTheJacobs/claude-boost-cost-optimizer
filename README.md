@@ -9,6 +9,16 @@
   <img src="docs/hero-light.svg" alt="Claude Boost: a real week of one developer's Claude Code spend by token class: cache reads 64%, cache writes 22%, output 14%. Most of the bill is the context being re-read on every request.">
 </picture>
 
+## Result: 65% cheaper on long sessions, same quality
+
+| 10 tasks in one session (Opus 5.5) | Tasks passed | Cost per session |
+|---|:-:|--:|
+| Plain Claude Code | 20/20 | $4.97 |
+| **With Claude Boost** | **20/20** | **$1.74 (-65%)** |
+
+Measured, not estimated: 40 graded tasks, reproducible with `python3 evals/long.py --reps 2`. [How it was tested](#long-sessions-boost-cuts-cost-65-at-the-same-quality) · [all eval results](#does-it-work-eval-results)
+
+
 **Contents:** [Why](#why) · [What is in it](#what-is-in-it) · [Install](#install) · [Eval results](#does-it-work-eval-results) · [The levers](#the-levers-in-order-with-their-source) · [Prices](#prices-used-per-1m-tokens-anthropic-pricing-page-2026-11-10) · [Plugins compared](#third-party-plugins-we-looked-at) · [FAQ](#faq) · [Privacy](#privacy)
 
 ## Why
