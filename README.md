@@ -1,6 +1,6 @@
 # Claude Boost: Claude Code cost optimizer
 
-**Cut your Claude Code bill without cutting quality. A free, local kit that shows where your tokens and dollars go, then applies the fixes Anthropic measured: a warm prompt cache, shorter context, a cheap Haiku subagent for lookups, and a daily dollar cap.**
+**Cut your Claude Code bill 65% on long sessions without cutting quality (measured, see evals). A free, local kit that shows where your tokens and dollars go, then applies the fixes Anthropic measured: a warm prompt cache, shorter context, a cheap Haiku subagent for lookups, and a daily dollar cap.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab?logo=python&logoColor=white)](tools/boost.py) [![Dependencies: none](https://img.shields.io/badge/dependencies-none-brightgreen)](#install) [![Runs locally](https://img.shields.io/badge/runs-100%25%20local-success)](#privacy) [![Claude Code](https://img.shields.io/badge/Claude%20Code-agents%20%7C%20skills%20%7C%20hooks-d97757)](#what-is-in-it) [![GitHub stars](https://img.shields.io/github/stars/JacobTheJacobs/claude-boost-cost-optimizer?style=flat&color=yellow)](https://github.com/JacobTheJacobs/claude-boost-cost-optimizer)
 
@@ -75,9 +75,20 @@ Plain Claude Code vs Claude Code with Boost, and with four popular token-saving 
 - **On short tasks nothing beats plain Claude Code.** Every add-on costs a little more (+1% to +10%), because each one adds its own instructions to every request and these tasks are too short to earn that back. Caveman and Ponytail cost the most; Boost the least.
 - **Slimmed Boost (current version):** after these results we cut Boost's always-on text to the one-line `reader` description and moved everything else into the on-demand `lean` skill. Re-measured back to back against plain (36 runs): plain $0.172, Boost $0.173 per run, 18/18 each. That is parity: the remaining $0.001 is the ~550 tokens Claude Code spends listing any custom agent.
 - **Measure in one batch.** The same plain setup cost $0.197 per run in one batch and $0.174 an hour later. Gaps under about 10% between setups run at different times are noise, so every number above comes from back-to-back runs.
-- **Where savings live:** long sessions. In real use (`tools/boost.py`, image above) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. A long-session eval is next.
+- **Where savings live:** long sessions. In real use (`tools/boost.py`, image above) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. The long-session eval below measures it.
 
 So: run `tools/boost.py`, act on what it shows, and don't install a plugin expecting it to cut short-task costs.
+
+### Long sessions: Boost cuts cost 65% at the same quality
+
+10 tasks in a row on the same repo (the 6 above plus 4 more lookups), Opus 5.5, 2 sessions per setup, 40 tasks graded pass/fail, 2026-11-12. Reproduce: `python3 evals/long.py --reps 2`.
+
+| Setup | How it works | Pass | $ per 10-task session |
+|---|---|:-:|--:|
+| plain | one continuous session, so every request re-reads the growing context | 20/20 | **$4.97** |
+| Boost | a fresh session per task (what `/clear` does) + the Haiku `reader` agent | 20/20 | **$1.74** |
+
+**-65%, no quality lost.** This is where the money is: on a short task nothing beats plain, but every task you add to a session makes each later request re-read everything before it. Clearing between unrelated tasks removes that.
 
 ## The levers, in order, with their source
 

@@ -22,5 +22,21 @@
  {
   "id": "logbreakdown",
   "prompt": "Count the ERROR lines in logs/app.log per message text (the words between ERROR and id=). Write them as a JSON object {message: count} to ANSWER.json."
+ },
+ {
+  "id": "warncount",
+  "prompt": "How many WARN lines are in logs/app.log? Write just the number to ANSWER.txt."
+ },
+ {
+  "id": "modcount",
+  "prompt": "How many functions are defined in shop/mod07.py? Write just the number to ANSWER.txt."
+ },
+ {
+  "id": "whereis",
+  "prompt": "Which file defines helper_9_13? Write just the path to ANSWER.txt."
+ },
+ {
+  "id": "diskfull",
+  "prompt": "How many ERROR lines in logs/app.log say disk full? Write just the number to ANSWER.txt."
  }
 ]

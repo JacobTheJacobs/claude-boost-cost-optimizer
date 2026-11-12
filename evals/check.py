@@ -23,4 +23,9 @@ elif task == "logbreakdown":
         ok = json.loads((d / "ANSWER.json").read_text()) == json.load(open(Path(__file__).parent / "expected.json"))["breakdown"]
     except (OSError, ValueError):
         ok = False
+elif task in ("warncount", "modcount", "whereis", "diskfull"):
+    a = (d / "ANSWER.txt").read_text().strip() if (d / "ANSWER.txt").exists() else ""
+    exp = json.load(open(Path(__file__).parent / "expected.json"))
+    a = a.removeprefix("./")
+    ok = a == {"warncount": str(exp["warn"]), "modcount": "25", "whereis": "shop/mod09.py", "diskfull": str(exp["diskfull"])}[task]
 print(json.dumps({"pass": ok}))
