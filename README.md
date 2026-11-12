@@ -49,28 +49,34 @@ For easy read-only work (reading files, logs or docs, searching, listing), use t
 
 ## Does it work? Eval results
 
-We ran the same tasks with plain Claude Code and with Claude Code + Boost (the `reader` agent and the lean instructions), each run on a fresh copy of a small test repo, graded pass/fail by a script. Claude Code 2.1.322, Opus 5.5, 3 runs per task per arm, 36 runs, 2026-11-12. Reproduce: `python3 evals/run.py --reps 3 && python3 evals/report.py`.
+Plain Claude Code vs Claude Code with Boost, and with four popular token-saving plugins: [Ponytail](https://github.com/DietrichGebert/ponytail), [Caveman](https://github.com/JuliusBrussee/caveman), [Pohuy](https://github.com/smixs/pohuy) and [context-mode](https://github.com/mksglu/context-mode). Same 6 tasks (a bug fix, a feature, a code lookup, three bulk-reading tasks over 12 files and a 20,000-line log), each run on a fresh copy of a test repo and graded pass/fail by a script. Claude Code 2.1.322, Opus 5.5, 3 runs per task per setup, 108 runs, 2026-11-12. Reproduce: `python3 evals/run.py --reps 3 --arms plain,boost,ponytail,caveman,pohuy,context-mode && python3 evals/report.py`.
 
-| Task | Plain: pass | Plain: $/run | Boost: pass | Boost: $/run | Change |
-|---|:-:|--:|:-:|--:|--:|
-| bugfix | 3/3 | $0.184 | 3/3 | $0.187 | +1% |
-| feature | 3/3 | $0.181 | 3/3 | $0.183 | +1% |
-| helpers | 3/3 | $0.231 | 3/3 | $0.216 | -6% |
-| logbreakdown | 3/3 | $0.185 | 3/3 | $0.176 | -5% |
-| logcount | 3/3 | $0.214 | 3/3 | $0.206 | -4% |
-| lookup | 3/3 | $0.188 | 3/3 | $0.190 | +1% |
-| **all** | **18/18** | **$0.197** | **18/18** | **$0.193** | **-2%** |
+| Setup | Pass | $ per run | vs plain | Output tokens per run | Prompt written to cache per run |
+|---|:-:|--:|--:|--:|--:|
+| plain | 18/18 | $0.174 | +0% | 539 | 16,386 |
+| boost | 18/18 | $0.176 | +1% | 506 | 16,929 |
+| ponytail | 18/18 | $0.189 | +9% | 587 | 18,102 |
+| caveman | 18/18 | $0.190 | +10% | 500 | 18,890 |
+| pohuy | 18/18 | $0.180 | +4% | 600 | 16,966 |
+| context-mode | 18/18 | $0.182 | +5% | 602 | 17,205 |
 
-Boost runs spent $0.002 in total on Haiku 5.5 (the reader agent).
+| Task | plain | boost | ponytail | caveman | pohuy | context-mode |
+|---|--:|--:|--:|--:|--:|--:|
+| bugfix | $0.172 (3/3) | $0.175 (3/3) | $0.180 (3/3) | $0.187 (3/3) | $0.185 (3/3) | $0.175 (3/3) |
+| feature | $0.161 (3/3) | $0.166 (3/3) | $0.178 (3/3) | $0.179 (3/3) | $0.179 (3/3) | $0.168 (3/3) |
+| helpers | $0.200 (3/3) | $0.219 (3/3) | $0.216 (3/3) | $0.217 (3/3) | $0.207 (3/3) | $0.220 (3/3) |
+| logbreakdown | $0.155 (3/3) | $0.153 (3/3) | $0.165 (3/3) | $0.172 (3/3) | $0.152 (3/3) | $0.173 (3/3) |
+| logcount | $0.187 (3/3) | $0.175 (3/3) | $0.212 (3/3) | $0.199 (3/3) | $0.185 (3/3) | $0.178 (3/3) |
+| lookup | $0.168 (3/3) | $0.169 (3/3) | $0.182 (3/3) | $0.189 (3/3) | $0.171 (3/3) | $0.177 (3/3) |
 
-**What this shows, honestly:**
+**What this shows:**
 
-- **Quality held:** 18/18 passes in both arms.
-- **On short, one-shot tasks Boost saves little: about 2%, within run-to-run noise.** Each run cost about $0.19, and most of that is the fixed start-up context Claude Code writes to cache on the first request, which neither arm changes.
-- **The reader agent was barely used** ($0.002 of Haiku in total): on tasks this small, Opus answers with one grep instead of delegating. The bulk-reading tasks were the ones Boost made cheaper (4-6%).
-- **What this eval does not cover:** long sessions. The biggest cost we found in real use (`tools/boost.py`, image above) is a long context re-read on every request; that is fixed by habits (`/clear` per task, `/compact` early, lookups in a subagent), not by anything a 3-turn task exercises. A long-session eval is the next step.
+- **Quality held everywhere:** 108/108 passes.
+- **On short tasks nothing beats plain Claude Code.** Every add-on costs a little more (+1% to +10%), because each one adds its own instructions to every request and these tasks are too short to earn that back. Caveman and Ponytail cost the most; Boost the least.
+- **Measure in one batch.** The same plain setup cost $0.197 per run in one batch and $0.174 an hour later. Gaps under about 10% between setups run at different times are noise, so every number above comes from back-to-back runs.
+- **Where savings live:** long sessions. In real use (`tools/boost.py`, image above) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. A long-session eval is next.
 
-So: use `tools/boost.py` first and act on what it shows; don't expect the agent and skill alone to cut a short task's cost.
+So: run `tools/boost.py`, act on what it shows, and don't install a plugin expecting it to cut short-task costs.
 
 ## The levers, in order, with their source
 
