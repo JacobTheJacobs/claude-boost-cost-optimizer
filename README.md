@@ -23,7 +23,7 @@ Measured, not estimated: 40 graded tasks, reproducible with `python3 evals/long.
 
 ## Why
 
-In agent loops the bill is mostly the context being re-read, not the code being written. Every request re-sends the whole conversation. On one developer's week (the image above, from `tools/boost.py`): $542 at list price, 64% of it cache reads at an average of 299K tokens a request.
+In agent loops the bill is mostly the context being re-read, not the code being written. Every request re-sends the whole conversation. On one developer's week (from `tools/boost.py`): $542 at list price, 64% of it cache reads at an average of 299K tokens a request.
 
 - **Measure first.** `boost.py` splits your spend by token class, model, project, session and main thread vs subagents, and names the lever that applies.
 - **Keep the cache valid.** "Fewer tokens" is not "lower cost": anything that rewrites the start of the prompt turns cheap cache reads into expensive cache writes.
@@ -85,7 +85,7 @@ Plain Claude Code vs Claude Code with Boost, and with four popular token-saving 
 - **On short tasks nothing beats plain Claude Code.** Every add-on costs a little more (+1% to +10%), because each one adds its own instructions to every request and these tasks are too short to earn that back. Caveman and Ponytail cost the most; Boost the least.
 - **Slimmed Boost (current version):** after these results we cut Boost's always-on text to the one-line `reader` description and moved everything else into the on-demand `lean` skill. Re-measured back to back against plain (36 runs): plain $0.172, Boost $0.173 per run, 18/18 each. That is parity: the remaining $0.001 is the ~550 tokens Claude Code spends listing any custom agent.
 - **Measure in one batch.** The same plain setup cost $0.197 per run in one batch and $0.174 an hour later. Gaps under about 10% between setups run at different times are noise, so every number above comes from back-to-back runs.
-- **Where savings live:** long sessions. In real use (`tools/boost.py`, image above) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. The long-session eval below measures it.
+- **Where savings live:** long sessions. In real use (`tools/boost.py`) the biggest cost is a long context re-read on every request. That is cut by habits (`/clear` per task, `/compact` early, bulky reads in a subagent), which a 3-turn task cannot show. The long-session eval below measures it.
 
 So: run `tools/boost.py`, act on what it shows, and don't install a plugin expecting it to cut short-task costs.
 
