@@ -1,6 +1,6 @@
 ---
 name: reader
-description: Cheap read-only helper for easy tasks - find where something is, read files, logs or docs, list things, answer a narrow question. Returns short rows, not file contents. Not for edits, design calls or hard debugging.
+description: Haiku read-only lookups - find, read, list, count. Not for edits.
 model: haiku
 effort: low
 tools: Read, Grep, Glob

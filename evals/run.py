@@ -42,7 +42,7 @@ def one(arm, task, rep, model):
     if model:
         cmd += ["--model", model]
     if arm == "boost":
-        cmd += ["--agents", reader_json(), "--append-system-prompt-file", str(HERE / "boost_prompt.md")]
+        cmd += ["--agents", reader_json()]
     elif arm == "pohuy":
         cmd += ["--append-system-prompt-file", str(HERE / "pohuy_style.md")]
     elif arm in PLUGINS:

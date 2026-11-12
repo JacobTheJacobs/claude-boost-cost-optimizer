@@ -1,6 +1,6 @@
 ---
 name: lean
-description: Lean mode for coding and answers - simplest change that works, least code, short replies. Use for routine coding tasks, bug fixes, and when the user asks to keep it cheap or lean.
+description: Lean coding - smallest working change, least code, short answers. Use when asked to keep it lean or cheap.
 ---
 
 # Lean
