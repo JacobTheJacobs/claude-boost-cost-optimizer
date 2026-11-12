@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<rect width="1000" height="420" rx="16" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="60" y="92" font-size="46" font-weight="700" fill="#111827">Claude Boost</text>
+<text x="60" y="136" font-size="22" fill="#4b5563">Find where your Claude Code money goes, then cut it.</text>
+<text x="60" y="226" font-size="18" font-weight="600" fill="#111827">A real week of one developer's Claude Code spend, by token class</text>
+<rect x="60" y="250" width="563" height="44" fill="#2563eb"/><rect x="623" y="250" width="194" height="44" fill="#f59e0b"/><rect x="817" y="250" width="123" height="44" fill="#10b981"/><rect x="60" y="318" width="14" height="14" rx="3" fill="#2563eb"/><text x="82" y="330" font-size="16" fill="#4b5563">Cache reads 64%</text><rect x="280" y="318" width="14" height="14" rx="3" fill="#f59e0b"/><text x="302" y="330" font-size="16" fill="#4b5563">Cache writes 22%</text><rect x="500" y="318" width="14" height="14" rx="3" fill="#10b981"/><text x="522" y="330" font-size="16" fill="#4b5563">Output 14%</text>
+<text x="60" y="382" font-size="15" fill="#4b5563">Most of the bill is the context being re-read every request, not the code written. Shorter sessions and a warm cache cut it first.</text>
+</svg>

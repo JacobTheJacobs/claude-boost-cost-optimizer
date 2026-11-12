@@ -1,0 +1,26 @@
+[
+ {
+  "id": "bugfix",
+  "prompt": "shop/money.py parse_price('$1,234.50') returns the wrong number. Fix it so US-style prices with thousands commas parse correctly. Keep the change minimal."
+ },
+ {
+  "id": "feature",
+  "prompt": "Add top_n(items, n) to shop/stats.py: return the n items with the highest price*qty, highest first. Items are dicts with price and qty."
+ },
+ {
+  "id": "lookup",
+  "prompt": "Which function in this repo appends lines to audit.log, and on which line is the write? Write the answer to ANSWER.txt as: path:line function_name"
+ },
+ {
+  "id": "logcount",
+  "prompt": "How many ERROR lines in logs/app.log mention timeout? Write just the number to ANSWER.txt."
+ },
+ {
+  "id": "helpers",
+  "prompt": "How many functions across shop/mod*.py return x * k + n with k of 21 or more? Write just the number to ANSWER.txt."
+ },
+ {
+  "id": "logbreakdown",
+  "prompt": "Count the ERROR lines in logs/app.log per message text (the words between ERROR and id=). Write them as a JSON object {message: count} to ANSWER.json."
+ }
+]
