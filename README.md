@@ -16,13 +16,44 @@
 | Plain Claude Code | 20/20 | $4.97 |
 | **With Claude Boost** | **20/20** | **$1.74 (-65%)** |
 
-40 graded tasks, 2026-11-12. Reproduce: `python3 evals/long.py --reps 2`.
+40 graded tasks, 2026-11-12. Details in [Eval](#eval).
 
 ## Why it works
 
 Every request re-sends the whole session. By task 10 of a long session, each request re-reads ~175K tokens of old history, and that re-reading is most of the bill, not the code written. Starting fresh per task keeps each request near Claude Code's ~16K-token baseline.
 
 So Boost watches the session size and tells you when a fresh start pays off. On short sessions it stays silent and costs nothing.
+
+## Eval
+
+Same 10 tasks, in order, on a test repo (a Python package, 12 modules, a 20,000-line log): a bug fix, a new function, then 8 lookups and counts over the code and the log. Each answer is checked by a script (`evals/check.py`). Claude Code 2.1.322, Opus 5.5, 2 sessions per setup.
+
+- **Plain:** one continuous session, every task resumes the last.
+- **Boost:** a fresh session per task (what `/clear` does) + the Haiku `reader` agent.
+
+Average cost of each task:
+
+| # | Task | Plain | Boost | Passed (plain / Boost) |
+|--:|---|--:|--:|:-:|
+| 1 | bug fix | $0.18 | $0.18 | 2/2 · 2/2 |
+| 2 | add a function | $0.23 | $0.16 | 2/2 · 2/2 |
+| 3 | find a code location | $0.31 | $0.17 | 2/2 · 2/2 |
+| 4 | count log errors | $0.40 | $0.17 | 2/2 · 2/2 |
+| 5 | count functions in 12 files | $0.52 | $0.22 | 2/2 · 2/2 |
+| 6 | error breakdown as JSON | $0.56 | $0.15 | 2/2 · 2/2 |
+| 7 | count warnings | $0.61 | $0.17 | 2/2 · 2/2 |
+| 8 | count functions in a file | $0.67 | $0.16 | 2/2 · 2/2 |
+| 9 | find a definition | $0.72 | $0.16 | 2/2 · 2/2 |
+| 10 | count one error type | $0.77 | $0.19 | 2/2 · 2/2 |
+| | **Total** | **$4.97** | **$1.74** | **20/20 · 20/20** |
+
+Plain gets more expensive with every task because it re-reads everything before it; Boost stays flat. The same small task costs 4x more at step 10 of a long session than in a fresh one.
+
+Reproduce (spends real tokens, about $13 at list price):
+
+```bash
+python3 evals/long.py --reps 2      # results in evals/long-results.jsonl
+```
 
 ## Install
 
